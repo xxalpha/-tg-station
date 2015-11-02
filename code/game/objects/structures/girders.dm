@@ -9,7 +9,7 @@
 	icon_state = "girder"
 	anchored = 1
 	density = 1
-	layer = 2
+	layer = OBJ_LAYER
 	var/state = GIRDER_NORMAL
 	var/girderpasschance = 20 // percentage chance that a projectile passes through the girder.
 
@@ -125,7 +125,7 @@
 					transfer_fingerprints_to(T)
 					qdel(src)
 				return
-		
+
 		if(!istype(W,/obj/item/stack/sheet))
 			return
 
