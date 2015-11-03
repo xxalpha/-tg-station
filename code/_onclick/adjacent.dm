@@ -26,7 +26,10 @@
 		* Passing through in this case ignores anything with the LETPASSTHROW pass flag, such as tables, racks, and morgue trays.
 */
 /turf/Adjacent(var/atom/neighbor, var/atom/target = null)
-	var/turf/T0 = get_turf(neighbor)
+	if(!isturf(neighbor.loc))
+		return 0
+
+	var/turf/T0 = neighbor.loc
 
 	if(T0 == src) //same turf
 		return 1
