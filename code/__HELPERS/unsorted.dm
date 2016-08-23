@@ -629,7 +629,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 	else if(isarea(areatype))
 		var/area/areatemp = areatype
 		areatype = areatemp.type
-	else
+	else if(!ispath(areatype))
 		return null
 
 	var/list/areas = list()
@@ -654,7 +654,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 	else if(isarea(areatype))
 		var/area/areatemp = areatype
 		areatype = areatemp.type
-	else
+	else if(!ispath(areatype))
 		return null
 
 	var/list/turfs = list()
