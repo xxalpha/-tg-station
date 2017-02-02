@@ -52,7 +52,15 @@
 	set desc = "Report an issue"
 	set hidden = 1
 	if(config.githuburl)
-		if(alert("This will open the Github issue reporter in your browser. Are you sure?",,"Yes","No")=="No")
+		var/message = "This will open the Github issue reporter in your browser. Are you sure?"
+		var/first = TRUE
+		for(var/line in revdata.testmerge)
+			if(line)
+				if(first)
+					first = FALSE
+					message += ". The following experimental changes are active and are probably the cause of any new or sudden issues you may experience. If possible, please try to find a specific thread for your issue instead of posting to the general issue tracker:"	
+				message += " <a href='[config.githuburl]/pull/[line]'>#[line]</a>"
+		if(tgalert(src, message, "Report Issue","Yes","No")=="No")
 			return
 		src << link("[config.githuburl]/issues/new")
 	else
@@ -130,6 +138,7 @@ Hotkey-Mode: (hotkey-mode must be on)
 \t3 = grab-intent
 \t4 = harm-intent
 \tNumpad = Body target selection (Press 8 repeatedly for Head->Eyes->Mouth)
+\tAlt(HOLD) = Alter movement intent 
 </font>"}
 
 	var/other = {"<font color='purple'>
@@ -152,6 +161,8 @@ Any-Mode: (hotkey doesn't need to be on)
 \tCtrl+2 = disarm-intent
 \tCtrl+3 = grab-intent
 \tCtrl+4 = harm-intent
+\tCtrl+'+/-' OR
+\tShift+Mousewheel = Ghost zoom in/out
 \tDEL = pull
 \tINS = cycle-intents-right
 \tHOME = drop

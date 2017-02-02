@@ -14,7 +14,7 @@
 	density = 1
 	icon = 'icons/obj/cloning.dmi'
 	icon_state = "pod_0"
-	req_access = list(access_genetics) //For premature unlocking.
+	req_access = list(access_cloning) //For premature unlocking.
 	verb_say = "states"
 	var/heal_level = 90 //The clone is released once its health reaches this level.
 	var/locked = FALSE
@@ -53,6 +53,8 @@
 	radio = null
 	qdel(countdown)
 	countdown = null
+	if(connected)
+		connected.DetachCloner(src)
 	. = ..()
 
 /obj/machinery/clonepod/RefreshParts()
@@ -67,7 +69,7 @@
 		heal_level = 100
 
 /obj/item/weapon/circuitboard/machine/clonepod
-	name = "circuit board (Clone Pod)"
+	name = "Clone Pod (Machine Board)"
 	build_path = /obj/machinery/clonepod
 	origin_tech = "programming=2;biotech=2"
 	req_components = list(
@@ -134,7 +136,7 @@
 		if(!G)
 			return FALSE
 	if(clonemind.damnation_type) //Can't clone the damned.
-		addtimer(src, "horrifyingsound", 0)
+		INVOKE_ASYNC(src, .proc/horrifyingsound)
 		mess = 1
 		icon_state = "pod_g"
 		update_icon()
@@ -145,7 +147,7 @@
 	countdown.start()
 
 	eject_wait = TRUE
-	addtimer(src, "wait_complete", 30)
+	addtimer(CALLBACK(src, .proc/wait_complete), 30)
 
 	var/mob/living/carbon/human/H = new /mob/living/carbon/human(src)
 
@@ -259,6 +261,24 @@
 	if(default_deconstruction_crowbar(W))
 		return
 
+	if(istype(W,/obj/item/device/multitool))
+		var/obj/item/device/multitool/P = W
+		
+		if(istype(P.buffer, /obj/machinery/computer/cloning))
+			if(get_area_master(P.buffer) != get_area_master(src))
+				user << "<font color = #666633>-% Cannot link machines across power zones. Buffer cleared %-</font color>"
+				P.buffer = null
+				return
+			user << "<font color = #666633>-% Successfully linked [P.buffer] with [src] %-</font color>"
+			var/obj/machinery/computer/cloning/comp = P.buffer
+			if(connected)
+				connected.DetachCloner(src)
+			comp.AttachCloner(src)
+		else
+			P.buffer = src
+			user << "<font color = #666633>-% Successfully stored \ref[P.buffer] [P.buffer.name] in buffer %-</font color>"
+		return
+		
 	if (W.GetID())
 		if (!check_access(W))
 			user << "<span class='danger'>Access Denied.</span>"

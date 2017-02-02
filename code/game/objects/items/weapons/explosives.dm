@@ -82,10 +82,10 @@
 	user << "<span class='notice'>You start planting the bomb...</span>"
 
 	if(do_after(user, 50, target = AM))
-		if(!user.unEquip(src))
+		if(!user.temporarilyRemoveItemFromInventory(src))
 			return
 		src.target = AM
-		loc = null
+		forceMove(null)
 
 		var/message = "[ADMIN_LOOKUPFLW(user)] planted [name] on [target.name] at [ADMIN_COORDJMP(target)] with [timer] second fuse"
 		bombers += message
@@ -94,7 +94,7 @@
 
 		target.add_overlay(image_overlay, 1)
 		user << "<span class='notice'>You plant the bomb. Timer counting down from [timer].</span>"
-		addtimer(src, "explode", timer * 10)
+		addtimer(CALLBACK(src, .proc/explode), timer * 10)
 
 /obj/item/weapon/c4/proc/explode()
 	if(qdeleted(src))

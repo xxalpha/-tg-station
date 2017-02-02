@@ -19,6 +19,10 @@
 
 	var/list/image/blueprint_data //for the station blueprints, images of objects eg: pipes
 
+	var/explosion_level = 0	//for preventing explosion dodging
+	var/explosion_id = 0
+	
+	var/list/decals
 
 /turf/New()
 	..()
@@ -111,6 +115,9 @@
 		var/atom/B = A
 		B.HasProximity(AM)
 
+	if(explosion_level && AM.ex_check(explosion_id))
+		AM.ex_act(explosion_level)
+
 /turf/open/Entered(atom/movable/AM)
 	..()
 	//slipping
@@ -157,8 +164,12 @@
 	if(L)
 		qdel(L)
 
+//wrapper for ChangeTurf()s that you want to prevent/affect without overriding ChangeTurf() itself
+/turf/proc/TerraformTurf(path, defer_change = FALSE, ignore_air = FALSE)
+	return ChangeTurf(path, defer_change, ignore_air)
+
 //Creates a new turf
-/turf/proc/ChangeTurf(path, defer_change = FALSE,ignore_air = FALSE)
+/turf/proc/ChangeTurf(path, defer_change = FALSE, ignore_air = FALSE)
 	if(!path)
 		return
 	if(!use_preloader && path == type) // Don't no-op if the map loader requires it to be reconstructed
@@ -168,12 +179,17 @@
 	SSair.remove_from_active(src)
 
 	var/list/old_checkers = proximity_checkers
+	var/old_ex_level = explosion_level
+	var/old_ex_id = explosion_id
 
 	Destroy()	//❄
 	var/turf/W = new path(src)
+
 	W.proximity_checkers = old_checkers
-	
-	
+	W.explosion_level = old_ex_level
+	W.explosion_id = old_ex_id
+
+
 	if(!defer_change)
 		W.AfterChange(ignore_air)
 	W.blueprint_data = old_blueprint_data
@@ -230,10 +246,6 @@
 /turf/proc/ReplaceWithLattice()
 	ChangeTurf(baseturf)
 	new /obj/structure/lattice(locate(x, y, z))
-
-/turf/proc/ReplaceWithCatwalk()
-	ChangeTurf(baseturf)
-	new /obj/structure/lattice/catwalk(locate(x, y, z))
 
 /turf/proc/phase_damage_creatures(damage,mob/U = null)//>Ninja Code. Hurts and knocks out creatures on this turf //NINJACODE
 	for(var/mob/living/M in src)
@@ -314,13 +326,19 @@
 	for(var/V in contents)
 		var/atom/A = V
 		if(A.level >= affecting_level)
+			if(istype(A,/atom/movable))
+				var/atom/movable/AM = A
+				if(!AM.ex_check(explosion_id))
+					continue
 			A.ex_act(severity, target)
 			CHECK_TICK
 
-/turf/ratvar_act(force)
-	. = (prob(40) || force)
+/turf/ratvar_act(force, ignore_mobs, probability = 40)
+	. = (prob(probability) || force)
 	for(var/I in src)
 		var/atom/A = I
+		if(ignore_mobs && ismob(A))
+			continue
 		if(ismob(A) || .)
 			A.ratvar_act()
 
@@ -413,3 +431,16 @@
 		return
 	if(has_gravity(src))
 		playsound(src, "bodyfall", 50, 1)
+
+
+/turf/proc/add_decal(decal,group)
+	LAZYINITLIST(decals)
+	if(!decals[group])
+		decals[group] = list()
+	decals[group] += decal
+	add_overlay(decals[group])
+
+/turf/proc/remove_decal(group)
+	LAZYINITLIST(decals)
+	overlays -= decals[group]
+	decals[group] = null

@@ -1,3 +1,5 @@
+// Hey! Listen! Update \config\spaceruinblacklist.txt with your new ruins!
+
 /datum/map_template/ruin/space
 	prefix = "_maps/RandomRuins/SpaceRuins/"
 	cost = 1
@@ -40,13 +42,6 @@
 	suffix = "asteroid5.dmm"
 	name = "Asteroid 5"
 	description = "Oh my god, another giant rock!"
-
-/datum/map_template/ruin/space/deep_storage
-	id = "deep-storage"
-	suffix = "deepstorage.dmm"
-	name = "Survivalist Bunker"
-	description = "Assume the best, prepare for the worst. Generally, you should do so by digging a three man heavily fortified bunker into a giant unused asteroid. \
-	Then make it self sufficient, mask any evidence of construction, hook it covertly into the telecommunications network and hope for the best."
 
 /datum/map_template/ruin/space/bigderelict1
 	id = "bigderelict1"

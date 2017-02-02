@@ -86,7 +86,7 @@
 	if(!holds_charge)
 		// Put it on a delay because moving item from slot to hand
 		// calls dropped().
-		addtimer(src, "empty_if_not_held", 2)
+		addtimer(CALLBACK(src, .proc/empty_if_not_held), 2)
 
 /obj/item/weapon/gun/energy/kinetic_accelerator/proc/empty_if_not_held()
 	if(!ismob(loc))
@@ -112,7 +112,7 @@
 	else
 		carried = 1
 
-	addtimer(src, "reload", overheat_time * carried)
+	addtimer(CALLBACK(src, .proc/reload), overheat_time * carried)
 
 /obj/item/weapon/gun/energy/kinetic_accelerator/emp_act(severity)
 	return
@@ -193,10 +193,10 @@
 	if(ismineralturf(target_turf))
 		var/turf/closed/mineral/M = target_turf
 		M.gets_drilled(firer)
-	var/obj/effect/overlay/temp/kinetic_blast/K = PoolOrNew(/obj/effect/overlay/temp/kinetic_blast, target_turf)
+	var/obj/effect/overlay/temp/kinetic_blast/K = new /obj/effect/overlay/temp/kinetic_blast(target_turf)
 	K.color = color
 	for(var/type in hit_overlays)
-		PoolOrNew(type, target_turf)
+		new type(target_turf)
 	if(turf_aoe)
 		for(var/T in RANGE_TURFS(1, target_turf) - target_turf)
 			if(ismineralturf(T))
@@ -253,10 +253,10 @@
 				break
 	if(KA.get_remaining_mod_capacity() >= cost)
 		if(.)
+			if(!user.transferItemToLoc(src, KA))
+				return
 			user << "<span class='notice'>You install the modkit.</span>"
 			playsound(loc, 'sound/items/Screwdriver.ogg', 100, 1)
-			user.unEquip(src)
-			forceMove(KA)
 			KA.modkits += src
 		else
 			user << "<span class='notice'>The modkit you're trying to install would conflict with an already installed modkit. Use a crowbar to remove existing modkits.</span>"

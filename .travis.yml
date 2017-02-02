@@ -10,13 +10,7 @@ env:
     - DM_MAPFILE=""
     matrix:
     - BUILD_TOOLS=true
-    - DM_MAPFILE="tgstation2"
-    - DM_MAPFILE="metastation"
-    - DM_MAPFILE="ministation"
-    - DM_MAPFILE="birdstation"
-    - DM_MAPFILE="pubbystation"
-    - DM_MAPFILE="templates"
-
+    - DM_MAPFILE="loadallmaps"
 
 cache:
   directories:
@@ -44,3 +38,4 @@ script:
   - tools/travis/check_filedirs.sh tgstation.dme
   - tools/travis/build_tools.sh
   - tools/travis/build_byond.sh
+

@@ -3,7 +3,7 @@
 	amount_per_transfer_from_this = 10
 	possible_transfer_amounts = list(5, 10, 15, 20, 25, 30, 50)
 	volume = 50
-	flags = OPENCONTAINER
+	container_type = OPENCONTAINER
 	spillable = 1
 	resistance_flags = ACID_PROOF
 
@@ -255,7 +255,6 @@
 	else if(isprox(O))
 		user << "<span class='notice'>You add [O] to [src].</span>"
 		qdel(O)
-		user.unEquip(src)
 		qdel(src)
 		user.put_in_hands(new /obj/item/weapon/bucket_sensor)
 	else

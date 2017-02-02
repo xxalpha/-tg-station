@@ -61,12 +61,11 @@
 		if(IW.w_class > src.w_class)
 			user << "<span class='warning'>\The [IW] is too large to fit into \the [src]!</span>"
 			return
-		if(!user.unEquip(W))
+		if(!user.transferItemToLoc(W, src))
 			return
 		user << "<span class='notice'>You load \the [IW] into \the [src].</span>"
 		loadedItems.Add(IW)
 		loadedWeightClass += IW.w_class
-		IW.loc = src
 
 
 
@@ -110,7 +109,7 @@
 		loadedWeightClass -= ITD.w_class
 		ITD.throw_speed = pressureSetting * 2
 		ITD.loc = get_turf(src)
-		ITD.throw_at_fast(target, pressureSetting * 5, pressureSetting * 2,user)
+		ITD.throw_at(target, pressureSetting * 5, pressureSetting * 2,user)
 	if(pressureSetting >= 3 && user)
 		user.visible_message("<span class='warning'>[user] is thrown down by the force of the cannon!</span>", "<span class='userdanger'>[src] slams into your shoulder, knocking you down!")
 		user.Weaken(3)
@@ -147,11 +146,10 @@
 		if(src.tank)
 			user << "<span class='warning'>\The [src] already has a tank.</span>"
 			return
-		if(!user.unEquip(thetank))
+		if(!user.transferItemToLoc(thetank, src))
 			return
 		user << "<span class='notice'>You hook \the [thetank] up to \the [src].</span>"
 		src.tank = thetank
-		thetank.loc = src
 	src.update_icons()
 
 /obj/item/weapon/pneumatic_cannon/proc/update_icons()

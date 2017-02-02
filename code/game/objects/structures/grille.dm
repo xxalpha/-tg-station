@@ -198,6 +198,7 @@
 			if(C)
 				playsound(src.loc, 'sound/magic/LightningShock.ogg', 100, 1, extrarange = 5)
 				tesla_zap(src, 3, C.powernet.avail * 0.01) //Zap for 1/100 of the amount of power. At a million watts in the grid, it will be as powerful as a tesla revolver shot.
+				C.powernet.load += C.powernet.avail * 0.0375 // you can gain up to 3.5 via the 4x upgrades power is halved by the pole so thats 2x then 1X then .5X for 3.5x the 3 bounces shock.
 	return ..()
 
 /obj/structure/grille/storage_contents_dump_act(obj/item/weapon/storage/src_object, mob/user)
@@ -223,10 +224,10 @@
 	..()
 	change_construction_value(1)
 	if(broken)
-		PoolOrNew(/obj/effect/overlay/temp/ratvar/grille/broken, get_turf(src))
+		new /obj/effect/overlay/temp/ratvar/grille/broken(get_turf(src))
 	else
-		PoolOrNew(/obj/effect/overlay/temp/ratvar/grille, get_turf(src))
-		PoolOrNew(/obj/effect/overlay/temp/ratvar/beam/grille, get_turf(src))
+		new /obj/effect/overlay/temp/ratvar/grille(get_turf(src))
+		new /obj/effect/overlay/temp/ratvar/beam/grille(get_turf(src))
 
 /obj/structure/grille/ratvar/Destroy()
 	change_construction_value(-1)
@@ -238,7 +239,7 @@
 		var/previouscolor = color
 		color = "#960000"
 		animate(src, color = previouscolor, time = 8)
-		addtimer(src, "update_atom_colour", 8)
+		addtimer(CALLBACK(src, /atom/proc/update_atom_colour), 8)
 
 /obj/structure/grille/ratvar/ratvar_act()
 	return

@@ -12,7 +12,6 @@
 	"THE TIME HAS COME FOR OUR MASTER TO BREAK THE CHAINS OF EXILE!!", \
 	"LEND US YOUR AID! ENGINE COMES!!")
 	channel_time = 150
-	required_components = list(BELLIGERENT_EYE = 10, VANGUARD_COGWHEEL = 10, GEIS_CAPACITOR = 10, REPLICANT_ALLOY = 10, HIEROPHANT_ANSIBLE = 10)
 	consumed_components = list(BELLIGERENT_EYE = 10, VANGUARD_COGWHEEL = 10, GEIS_CAPACITOR = 10, REPLICANT_ALLOY = 10, HIEROPHANT_ANSIBLE = 10)
 	invokers_required = 5
 	multiple_invokers_used = TRUE
@@ -39,7 +38,7 @@
 			return FALSE
 		var/area/A = get_area(invoker)
 		var/turf/T = get_turf(invoker)
-		if(!T || T.z != ZLEVEL_STATION || istype(A, /area/shuttle))
+		if(!T || T.z != ZLEVEL_STATION || istype(A, /area/shuttle) || !A.blob_allowed)
 			invoker << "<span class='warning'>You must be on the station to activate the Ark!</span>"
 			return FALSE
 		if(clockwork_gateway_activated)
