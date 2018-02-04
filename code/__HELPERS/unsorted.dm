@@ -817,7 +817,8 @@ Turf and target are separate in case you want to teleport some distance from a t
 //e.g: rods
 GLOBAL_LIST_INIT(can_embed_types, typecacheof(list(
 	/obj/item/stack/rods,
-	/obj/item/pipe)))
+	/obj/item/pipe,
+	/obj/item/clothing/mask/toothpick)))
 
 /proc/can_embed(obj/item/W)
 	if(W.is_sharp())
